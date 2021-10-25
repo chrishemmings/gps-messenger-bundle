@@ -68,7 +68,7 @@ class GpsSenderTest extends TestCase
 
         $this->serializerProphecy->encode($envelope)->willReturn($envelopeArray)->shouldBeCalledOnce();
 
-        $this->gpsConfigurationProphecy->getQueueName()->willReturn(self::TOPIC_NAME)->shouldBeCalledOnce();
+        $this->gpsConfigurationProphecy->getTopicName()->willReturn(self::TOPIC_NAME)->shouldBeCalledOnce();
 
         $this->pubSubClientProphecy->topic(self::TOPIC_NAME)->willReturn($this->topicProphecy->reveal())->shouldBeCalledOnce();
 
@@ -87,7 +87,7 @@ class GpsSenderTest extends TestCase
 
         $this->serializerProphecy->encode($envelope)->willReturn($envelopeArray)->shouldBeCalledOnce();
 
-        $this->gpsConfigurationProphecy->getQueueName()->willReturn(self::TOPIC_NAME)->shouldBeCalledOnce();
+        $this->gpsConfigurationProphecy->getTopicName()->willReturn(self::TOPIC_NAME)->shouldBeCalledOnce();
 
         $this->pubSubClientProphecy->topic(self::TOPIC_NAME)->willReturn($this->topicProphecy->reveal())->shouldBeCalledOnce();
 

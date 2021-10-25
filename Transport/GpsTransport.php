@@ -7,12 +7,13 @@ namespace PetitPress\GpsMessengerBundle\Transport;
 use Google\Cloud\PubSub\PubSubClient;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
+use Symfony\Component\Messenger\Transport\SetupableTransportInterface;
 use Symfony\Component\Messenger\Transport\TransportInterface;
 
 /**
  * @author Ronald Marfoldi <ronald.marfoldi@petitpress.sk>
  */
-final class GpsTransport implements TransportInterface
+final class GpsTransport implements TransportInterface  //, SetupableTransportInterface
 {
     private PubSubClient $pubSubClient;
     private GpsConfigurationInterface $gpsConfiguration;
@@ -62,24 +63,40 @@ final class GpsTransport implements TransportInterface
         return $this->getSender()->send($envelope);
     }
 
+    /**
+     * Return GPS Receiver instance
+     *
+     */
     public function getReceiver(): GpsReceiver
     {
         if (isset($this->receiver)) {
             return $this->receiver;
         }
 
-        $this->receiver = new GpsReceiver($this->pubSubClient, $this->gpsConfiguration, $this->serializer);
+        $this->receiver = new GpsReceiver(
+            $this->pubSubClient,
+            $this->gpsConfiguration,
+            $this->serializer
+        );
 
         return $this->receiver;
     }
 
+    /**
+     * Return GPS Sender instance
+     *
+     */
     public function getSender(): GpsSender
     {
         if (isset($this->sender)) {
             return $this->sender;
         }
 
-        $this->sender = new GpsSender($this->pubSubClient, $this->gpsConfiguration, $this->serializer);
+        $this->sender = new GpsSender(
+            $this->pubSubClient,
+            $this->gpsConfiguration,
+            $this->serializer
+        );
 
         return $this->sender;
     }

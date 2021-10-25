@@ -22,44 +22,25 @@ final class GpsConfigurationResolver implements GpsConfigurationResolverInterfac
 
         $optionsResolver = new OptionsResolver();
         $optionsResolver
+            ->setRequired('topic_name')
+            ->setAllowedTypes('topic_name', 'string')
+            ->setRequired('subscription_name')
+            ->setAllowedTypes('subscription_name', 'string')
+            ->setRequired('key_file_path')
+            ->setAllowedTypes('key_file_path', 'string')
+            ->setRequired('project_id')
+            ->setAllowedTypes('project_id', 'string')
             ->setDefault('max_messages_pull', self::DEFAULT_MAX_MESSAGES_PULL)
-            ->setDefault('topic', static function (OptionsResolver $topicResolver): void {
-                $topicResolver
-                    ->setDefault('name', self::DEFAULT_TOPIC_NAME)
-                    ->setAllowedTypes('name', 'string')
-                ;
-            })
-            ->setDefault('queue', static function (OptionsResolver $queueResolver, Options $parentOptions): void {
-                $queueResolver
-                    ->setDefault('name', $parentOptions['topic']['name'])
-                    ->setAllowedTypes('name', 'string')
-                ;
-            })
             ->setNormalizer('max_messages_pull', static function (Options $options, $value): ?int {
                 return ((int) filter_var($value, FILTER_SANITIZE_NUMBER_INT)) ?: null;
             })
             ->setAllowedTypes('max_messages_pull', ['int', 'string'])
+            ->setDefault('api_endpoint', null)
+            ->setAllowedTypes('api_endpoint', ['null', 'string']);
         ;
 
-        $dnsOptions = [];
-        $parsedDnsOptions = parse_url($dsn);
+        $resolvedOptions = $optionsResolver->resolve($options);
 
-        $dsnQueryOptions = $parsedDnsOptions['query'] ?? null;
-        if ($dsnQueryOptions) {
-            parse_str($dsnQueryOptions, $dnsOptions);
-        }
-
-        $dnsPathOption = $parsedDnsOptions['path'] ?? null;
-        if ($dnsPathOption) {
-            $dnsOptions['topic']['name'] = substr($dnsPathOption, 1);
-        }
-
-        $resolvedOptions = $optionsResolver->resolve(array_merge($dnsOptions, $options));
-
-        return new GpsConfiguration(
-            $resolvedOptions['topic']['name'],
-            $resolvedOptions['queue']['name'],
-            $resolvedOptions['max_messages_pull'],
-        );
+        return new GpsConfiguration($resolvedOptions);
     }
 }

@@ -26,9 +26,13 @@ final class GpsTransportFactory implements TransportFactoryInterface
      */
     public function createTransport(string $dsn, array $options, SerializerInterface $serializer): TransportInterface
     {
+        $gpsConfiguration = $this->gpsConfigurationResolver->resolve($dsn, $options);
+
+        $GpsClient = new PubSubClient($gpsConfiguration->getClientConfiguration());
+
         return new GpsTransport(
-            new PubSubClient(),
-            $this->gpsConfigurationResolver->resolve($dsn, $options),
+            $GpsClient,
+            $gpsConfiguration,
             $serializer
         );
     }
@@ -38,6 +42,6 @@ final class GpsTransportFactory implements TransportFactoryInterface
      */
     public function supports(string $dsn, array $options): bool
     {
-        return str_starts_with($dsn, 'gps://');
+        return 0 === strpos($dsn, 'gps://');
     }
 }

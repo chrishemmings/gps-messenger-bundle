@@ -9,9 +9,17 @@ namespace PetitPress\GpsMessengerBundle\Transport;
  */
 interface GpsConfigurationInterface
 {
-    public function getQueueName(): string;
+    public function getTopicName() : ?string;
 
-    public function getSubscriptionName(): string;
+    public function getSubscriptionName(): ?string;
+
+    public function getKeyFilePath(): ?string;
+
+    public function getProjectId(): ?string;
 
     public function getMaxMessagesPull(): int;
+
+    public function getApiEndpoint(): ?string;
+
+    public function getClientConfiguration(): array;
 }
